@@ -1,0 +1,171 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Pokémon Universe - Accueil</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/blog.css">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand">Pokémon Universe</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'accueil' %}">Accueil</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'wiki' %}">Wiki</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<!-- Accueil Section -->
+<section id="accueil" class="container mt-5">
+    <h2 class="text-center mb-4">Bienvenue dans le monde Pokémon</h2>
+    <div class="row">
+        <!-- Miniatures des Pokémons -->
+        <div class="col-md-8" style="margin-left: 70px;">
+            <div class="row">
+                {% for pokemon in pokemons %}
+                <div class="col-md-3">
+                    <div class="pokemon-card" data-nom="{{ pokemon.nom }}" data-toggle="tooltip" title="{{ pokemon.nom }} | Type: {{ pokemon.type }} | État: {{ pokemon.etat }} | Lieu: {{ pokemon.lieu }}" onclick="selectPokemon(this)">
+                        <img src="{{ pokemon.photo.url }}" alt="{{ pokemon.nom }}" class="img-thumbnail">
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <!-- Miniatures des Lieux -->
+        <div class="col-md-2" style="margin-right: 10px;">
+            {% for lieu in lieux %}
+            <div class="row-mt-2">
+                <div class="lieu-card" data-id-lieu="{{ lieu.id_lieu }}" data-toggle="tooltip" title="{{lieu.id_lieu}} | {{ lieu.disponibilite }} | Occupants: {% for occupant in lieu.get_occupants %}{{ occupant.nom }}{% if not forloop.last %}, {% endif %}{% endfor %}">
+                    <img src="{{ lieu.photo.url }}" alt="{{ lieu.id_lieu }}" class="img-thumbnail">
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Boutons -->
+    <div class="row action-buttons">
+        <div class="col-md-12" style="margin-top: 10px; margin-left:70px;">
+            <button id="capturerBtn"class="btn btn-primary">Capturer</button>
+            <button id="nourrirBtn" class="btn btn-success">Nourrir</button>
+            <button id="divertirBtn" class="btn btn-warning">Divertir</button>
+            <button id="soignerBtn"class="btn btn-danger">Soigner</button>
+        </div>
+    </div>
+</section>
+
+<!-- JavaScript pour gérer les événements -->
+<!-- Ajoutez jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    var selectedCard;
+    // selectionner un pokemon
+    function selectPokemon(element){
+        // Désélectionne toutes les cartes
+    var carte = document.querySelectorAll('.pokemon-card');
+    carte.forEach(function(carte) {
+        carte.classList.remove('selected');
+    });
+    // Sélectionne la carte cliquée
+    selectedCard = element.closest('.pokemon-card');
+    if (selectedCard) {
+    selectedCard.classList.add('selected');
+    } 
+    else {
+    console.error("Aucun élément avec la classe 'pokemon-card' trouvé.");
+    }
+}
+$(document).ready(function () {
+        $('#nourrirBtn').on('click', function () {
+            var nomPokemon =selectedCard.dataset.nom;
+            $.ajax({
+                type: 'POST',
+                url: '/accueil/nourrir/',
+                data: { action: 'nourrir', nom: nomPokemon },
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                    } else {
+                        alert('Erreur : ' + response.message);
+                    }
+                },
+                error: function (error) {
+                    console.error('Erreur AJAX : ', error);
+                }
+            });
+        });
+        $('#divertirirBtn').on('click', function () {
+            var nomPokemon =selectedCard.dataset.nom;
+            $.ajax({
+                type: 'POST',
+                url: '/accueil/divertir/',
+                data: { action: 'divertir', nom: nomPokemon },
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                    } else {
+                        alert('Erreur : ' + response.message);
+                    }
+                },
+                error: function (error) {
+                    console.error('Erreur AJAX : ', error);
+                }
+            });
+        });
+        $('#soignerBtn').on('click', function () {
+            var nomPokemon =selectedCard.dataset.nom;
+            $.ajax({
+                type: 'POST',
+                url: '/accueil/soigner/',
+                data: { action: 'soigner', nom: nomPokemon },
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                    } else {
+                        alert('Erreur : ' + response.message);
+                    }
+                },
+                error: function (error) {
+                    console.error('Erreur AJAX : ', error);
+                }
+            });
+        });
+        $('#captureBtn').on('click', function () {
+            var nomPokemon =selectedCard.dataset.nom;
+            $.ajax({
+                type: 'POST',
+                url: '/accueil/capturer/',
+                data: { action: 'capturer', nom: nomPokemon },
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                    } else {
+                        alert('Erreur : ' + response.message);
+                    }
+                },
+                error: function (error) {
+                    console.error('Erreur AJAX : ', error);
+                }
+            });
+        });
+    });
+
+</script>
+<!-- JQuery,Bootstrap Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

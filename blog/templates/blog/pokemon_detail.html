@@ -1,0 +1,65 @@
+{% load static %}
+<!-- template pokemon_detail.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ pokemon.nom }}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/blog.css">
+</head>
+<body class="{% if pokemon.type == 'Feu' %}feu-theme{% elif pokemon.type == 'Eau' %}eau-theme{% elif pokemon.type == 'Sol' %}sol-theme{% elif pokemon.type == 'Plante' %}plante-theme{% endif %}">
+    <div class="col-md-3 mx-auto text-center">
+            <img id="{{ pokemon.nom }}Image" class="card-img-top" src="{{ pokemon.photo.url }}" alt="{{ pokemon.nom }}">
+            <h2>{{ pokemon.nom }}</h2>
+            <p>Etat: {{ pokemon.etat }}</p>
+            <p>Lieu: {{ pokemon.lieu }}</p>
+    </div>
+    <!-- Add other details and the form for state and location modification -->
+    <div class="page-header mx-auto text-center">
+        <form method="POST" class="post-form">{% csrf_token %}
+            <b> Modifier : </b> {{ form.as_ul }}
+            <div class="boutons-form mt-3">
+                <button type="submit" class="btn btn-dark">OK</button>
+            <a href="/wiki/" class="btn btn-dark">Back</a>
+            </div>
+        </form>
+    </div>
+    <div class="container mt-05">
+        {% if error_message != ''%}
+        <!-- Fenêtre modale -->
+        <div class="modal fade" id="warningModal" tabindex="-1" role="dialog" aria-labelledby="warningModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="warningModalLabel">Warning Box</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Contenu de la boîte d'alerte -->
+                        <p>{{error_message}}</p>
+                    </div>
+                    <div class="modal-footer"></div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+     <!-- Inclure jQuery et Bootstrap JS depuis un CDN -->
+     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+        var error_message = "{% if error_message %}{{ error_message }}{% endif %}";
+        $(document).ready(function() {
+    // Si error_message n'est pas vide, affiche la fenêtre modale
+        if (error_message != ''){
+            $('#warningModal').modal('show');
+        }
+});
+    </script>
+</body>
+</html>
